@@ -1,6 +1,7 @@
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
 import "hardhat-dependency-compiler";
+require("dotenv").config({ path: ".env" });
 
 const config: HardhatUserConfig = {
   solidity: "0.8.19",
@@ -9,7 +10,8 @@ const config: HardhatUserConfig = {
   },
   networks: {
     polygonMumbai: {
-
+      url: "https://mumbai.polygonscan.com/",
+      accounts: [process.env.PRIVATE_KEY || ""],
     },
     scroll: {
 
