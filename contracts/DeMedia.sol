@@ -5,6 +5,7 @@ import "./IAnonAadhaarVerifier.sol";
 
 contract DeMedia {
     struct Media {
+        string title;
         string description;
         // type of news tag: social, feedback, critique, tech
         string[] tags;
@@ -32,7 +33,16 @@ contract DeMedia {
     mapping(uint256 => Score) scoreTrack;
 
     event Answered(address indexed _from, uint256 indexed _mediaIndex);
-    event Created(address indexed _from, uint256 indexed _mediaIndex);
+    event Created(
+        address indexed _from,
+        uint256 indexed _mediaIndex,
+        string title,
+        string description,
+        bool isPoll,
+        uint256 flag,
+        string[] tags,
+        string[] options
+    );
 
     // List of media
     mapping(uint256 => Media) medias;
@@ -51,9 +61,13 @@ contract DeMedia {
     }
 
     // Function to add media
-    function addMedia(string calldata description,
+    function addMedia(
+        string calldata title,
+        string calldata description,
         bool isPoll,
         string[] calldata polls,
+        uint256 flag,
+        string[] calldata tags,
         uint256[2] calldata _pA, uint[2][2] calldata _pB,
         uint[2] calldata _pC, uint[34] calldata _pubSignals
     ) public {
@@ -62,13 +76,14 @@ contract DeMedia {
 
         mediaCounter++;
         medias[mediaCounter].description = description;
+        medias[mediaCounter].flag = flag;
 
         if (isPoll) {
             for(uint256 i = 0; i < polls.length; i++) {
-                medias[mediaCounter].polls[i] = polls[i];
+                medias[mediaCounter].polls.push(polls[i]);
             }
         }
-        emit Created(msg.sender, mediaCounter);
+        emit Created(msg.sender, mediaCounter, title, description, isPoll, flag, tags, polls);
     }
 
     // Function to vote on media
@@ -100,6 +115,26 @@ contract DeMedia {
         scoreTrack[_pubSignals[0]].responseTotal++;
 
         emit Answered(msg.sender, mediaIndex);
+    }
+
+    // Note: Only used for testing purpose
+    function addData(string calldata description,
+        bool isPoll,
+        string[] calldata polls
+    ) public {
+        mediaCounter++;
+        medias[mediaCounter].description = description;
+
+        medias[mediaCounter].yes = 3;
+        medias[mediaCounter].no = 1;
+        medias[mediaCounter].abstain = 1;
+
+        if (isPoll) {
+            for(uint256 i = 0; i < polls.length; i++) {
+                medias[mediaCounter].polls.push(polls[i]);
+                medias[mediaCounter].pollsCount.push(i);
+            }
+        }
     }
 
     // TODO: Add more features
