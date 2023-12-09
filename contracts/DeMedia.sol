@@ -5,26 +5,29 @@ import "./IAnonAadhaarVerifier.sol";
 
 contract DeMedia {
     struct Media {
+        // TODO: add pool type
         string description;
+        // type of news tag: social, feedback, critique
+        string tag;
         uint256 yes;
         uint256 no;
         uint256 abstain;
         uint256 voteCount;
         // Nullifier can be accessed by calling _pubSignals[0]
-        mapping(uint256 => bool) hasVoted;
+        mapping(uint256 => bool) hasAnswered;
     }
     address public anonAadhaarVerifierAddr;
     uint256 public mediaCounter;
 
     // Score storage
     struct Score {
-        // number of media reports a person has voted on.
-        uint256 votedOn;
+        // number of media reports a person has responsed on.
+        uint256 responseTotal;
         // TODO: add more parameters
     }
     mapping(uint256 => Score) scoreTrack;
 
-    event Voted(address indexed _from, uint256 indexed _mediaIndex);
+    event Answered(address indexed _from, uint256 indexed _mediaIndex);
     event Created(address indexed _from, uint256 indexed _mediaIndex);
 
     // List of media
@@ -47,25 +50,21 @@ contract DeMedia {
 
         mediaCounter++;
         medias[mediaCounter].description = description;
-        // medias[mediaCounter].yes = 0;
-        // medias[mediaCounter].no = 0;
-        // medias[mediaCounter].abstain = 0;
-        // medias[mediaCounter].voteCount = 0;
 
         emit Created(msg.sender, mediaCounter);
     }
 
     // Function to vote on media
-    function voteForMedia(uint256 mediaIndex, uint256[2] calldata _pA, uint[2][2] calldata _pB, uint[2] calldata _pC, uint[34] calldata _pubSignals) public {
+    function responseOnMedia(uint256 mediaIndex, uint256[2] calldata _pA, uint[2][2] calldata _pB, uint[2] calldata _pC, uint[34] calldata _pubSignals) public {
         require(mediaIndex > mediaCounter, "Invalid media index");
-        require(!medias[mediaIndex].hasVoted[_pubSignals[0]], "You have already voted");
+        require(!medias[mediaIndex].hasAnswered[_pubSignals[0]], "You have already voted");
         require(verify(_pA, _pB, _pC, _pubSignals), "Your idendity proof is not valid");
 
         medias[mediaIndex].voteCount++;
-        medias[mediaIndex].hasVoted[_pubSignals[0]] = true;
-        scoreTrack[_pubSignals[0]].votedOn++;
+        medias[mediaIndex].hasAnswered[_pubSignals[0]] = true;
+        scoreTrack[_pubSignals[0]].responseTotal++;
 
-        emit Voted(msg.sender, mediaIndex);
+        emit Answered(msg.sender, mediaIndex);
     }
 
     // TODO: Generate random numbers ?
