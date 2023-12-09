@@ -17,6 +17,14 @@ contract DeMedia {
     address public anonAadhaarVerifierAddr;
     uint256 public mediaCounter;
 
+    // Score storage
+    struct Score {
+        // number of media reports a person has voted on.
+        uint256 votedOn;
+        // TODO: add more parameters
+    }
+    mapping(uint256 => Score) scoreTrack;
+
     event Voted(address indexed _from, uint256 indexed _mediaIndex);
     event Created(address indexed _from, uint256 indexed _mediaIndex);
 
@@ -56,7 +64,31 @@ contract DeMedia {
 
         medias[mediaIndex].voteCount++;
         medias[mediaIndex].hasVoted[_pubSignals[0]] = true;
+        scoreTrack[_pubSignals[0]].votedOn++;
 
         emit Voted(msg.sender, mediaIndex);
     }
+
+    // TODO: Generate random numbers ?
+    // TODO: Add more features
+
+    // Function to get the total number of media
+    function getMediaCount() public view returns (uint256) {
+        return mediaCounter;
+    }
+
+    // Function to get media information by index
+    function getMedia(uint256 mediaIndex) public view returns (string memory, uint256, uint256, uint256, uint256) {
+        require(mediaIndex > mediaCounter, "Invalid media index");
+
+        Media storage media = medias[mediaIndex];
+        return (media.description, media.yes, media.no, media.abstain, media.voteCount);
+    }
+
+    // Function to check if a user has already voted on a specific media
+    // User here is ID
+    // TODO: how unique id is generated ?
+    // function checkVoted(uint256 id, uint256 mediaIndex) public view returns (bool) {
+    //     return hasVoted[_addr];
+    // }
 }
