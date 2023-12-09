@@ -14,6 +14,7 @@ const config: HardhatUserConfig = {
      //  url: "https://rpc-mumbai.matic.today",
      // url: "https://rpc-mumbai.maticvigil.com",
       accounts: [process.env.PRIVATE_KEY || ""],
+      gasPrice: 35000000000,
     },
     // scroll: {
 

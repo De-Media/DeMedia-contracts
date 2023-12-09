@@ -23,13 +23,18 @@ async function main() {
     const _AnonAadhaarVerifierAddress = anonAadhaarVerifier.getAddress();
     console.log(_AnonAadhaarVerifierAddress, "HERE----->>");
 
-
-    let Vote = await ethers.getContractFactory("DeMedia");
-    let vote = await Vote.deploy(
+    let DeMedia = await ethers.getContractFactory("DeMedia");
+    let demedia = await DeMedia.deploy(
       _AnonAadhaarVerifierAddress
     );
 
-    console.log(vote.getAddress(), "HERE----->>");
+    await demedia.waitForDeployment();
+
+    console.log(demedia.getAddress(), "HERE----->>");
+
+    await demedia.addData("ETHIndia is largest hackathon", false, []);
+
+    await demedia.addData("Poll test", true, ["poll-1", "poll-2", "poll-3"]);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
