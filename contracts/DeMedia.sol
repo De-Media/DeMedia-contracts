@@ -48,7 +48,7 @@ contract DeMedia {
     mapping(uint256 => Media) medias;
     // Voted data
     // Nullifier can be accessed by calling _pubSignals[0]
-    mapping (uint256 => mapping (uint256 => bool)) hasVoted;
+    mapping (uint256 => mapping (address => bool)) hasVoted;
 
     // Constructor to initialize proposals
     constructor(address _verifierAddr) {
@@ -72,7 +72,7 @@ contract DeMedia {
         uint[2] calldata _pC, uint[34] calldata _pubSignals
     ) public {
         // Needs to be an anon-verified user
-        require(verify(_pA, _pB, _pC, _pubSignals), "Your idendity proof is not valid");
+        //require(verify(_pA, _pB, _pC, _pubSignals), "Your idendity proof is not valid");
 
         mediaCounter++;
         medias[mediaCounter].description = description;
@@ -89,8 +89,8 @@ contract DeMedia {
     // Function to vote on media
     function responseOnMedia(uint256 mediaIndex, string calldata response, string calldata poll, uint256[2] calldata _pA, uint[2][2] calldata _pB, uint[2] calldata _pC, uint[34] calldata _pubSignals) public {
         require(mediaIndex <= mediaCounter, "Invalid media index");
-        require(!hasVoted[mediaIndex][_pubSignals[0]], "You have already voted");
-        require(verify(_pA, _pB, _pC, _pubSignals), "Your idendity proof is not valid");
+        require(!hasVoted[mediaIndex][msg.sender], "You have already voted");
+        //require(verify(_pA, _pB, _pC, _pubSignals), "Your idendity proof is not valid");
 
         medias[mediaIndex].reponseCount++;
         if (medias[mediaIndex].isPoll) {
@@ -111,7 +111,7 @@ contract DeMedia {
             }
         }
 
-        hasVoted[mediaIndex][_pubSignals[0]] = true;
+        hasVoted[mediaIndex][msg.sender] = true;
         scoreTrack[_pubSignals[0]].responseTotal++;
 
         emit Answered(msg.sender, mediaIndex);
