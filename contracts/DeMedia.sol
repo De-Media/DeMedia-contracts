@@ -59,9 +59,7 @@ contract DeMedia {
         string[] calldata media,
         string[] calldata polls,
         uint256 flag,
-        string[] calldata tags,
-        uint256[2] calldata _pA, uint[2][2] calldata _pB,
-        uint[2] calldata _pC, uint[34] calldata _pubSignals
+        string[] calldata tags
     ) public {
         // Needs to be an anon-verified user
         // require(verify(_pA, _pB, _pC, _pubSignals), "Your idendity proof is not valid");
@@ -83,7 +81,7 @@ contract DeMedia {
     }
 
     // Function to vote on media
-    function responseOnMedia(uint256 mediaIndex, string calldata response, string calldata poll, uint256[2] calldata _pA, uint[2][2] calldata _pB, uint[2] calldata _pC, uint[34] calldata _pubSignals) public {
+    function responseOnMedia(uint256 mediaIndex, string calldata response, string calldata poll) public {
         require(mediaIndex <= mediaCounter, "Invalid media index");
         require(!hasVoted[mediaIndex][msg.sender], "You have already voted");
         //require(verify(_pA, _pB, _pC, _pubSignals), "Your idendity proof is not valid");
@@ -108,7 +106,7 @@ contract DeMedia {
         }
 
         hasVoted[mediaIndex][msg.sender] = true;
-        scoreTrack[_pubSignals[0]].responseTotal++;
+        //scoreTrack[_pubSignals[0]].responseTotal++;
 
         emit Answered(msg.sender, mediaIndex);
     }
@@ -144,12 +142,13 @@ contract DeMedia {
     // returns description, tags, flag, isPoll, polls data,
     // yes, no, abstain, responseCount
     function getMedia(uint256 mediaIndex)
-        public view returns (string memory, string[] memory,
+        public view returns (string memory, string memory, string[] memory,
         uint256, bool, string[] memory, uint256[] memory,
         uint256, uint256, uint256, uint256) {
         require(mediaIndex <= mediaCounter, "Invalid media index");
         Media memory media = medias[mediaIndex];
         return (
+            media.title,
             media.description,
             media.tags,
             media.flag,

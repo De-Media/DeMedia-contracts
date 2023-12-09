@@ -32,9 +32,9 @@ async function main() {
 
     console.log(demedia.getAddress(), "HERE----->>");
 
-    await demedia.addData("ETHIndia is largest hackathon", false, []);
+    // await demedia.addData("ETHIndia is largest hackathon", false, []);
 
-    await demedia.addData("Poll test", true, ["poll-1", "poll-2", "poll-3"]);
+    // await demedia.addData("Poll test", true, ["poll-1", "poll-2", "poll-3"]);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
