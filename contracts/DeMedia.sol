@@ -50,10 +50,12 @@ contract DeMedia {
         return IAnonAadhaarVerifier(anonAadhaarVerifierAddr).verifyProof(_pA, _pB, _pC, _pubSignals);
     }
 
-    // Function to add media
-    function addMedia(string calldata description,
-        bool isPoll,
+    // Add media
+    function addMedia(
+        string[] calldata media,
         string[] calldata polls,
+        uint256 flag,
+        string[] calldata tags,
         uint256[2] calldata _pA, uint[2][2] calldata _pB,
         uint[2] calldata _pC, uint[34] calldata _pubSignals
     ) public {
@@ -61,13 +63,19 @@ contract DeMedia {
         require(verify(_pA, _pB, _pC, _pubSignals), "Your idendity proof is not valid");
 
         mediaCounter++;
-        medias[mediaCounter].description = description;
+        medias[mediaCounter].description = media[0];
+        medias[mediaCounter].flag = flag;
+        for(uint256 i = 0; i < tags.length; i++) {
+            medias[mediaCounter].tags.push(tags[i]);
+        }
 
-        if (isPoll) {
+        if (polls.length > 0) {
+            medias[mediaCounter].isPoll = true;
             for(uint256 i = 0; i < polls.length; i++) {
-                medias[mediaCounter].polls[i] = polls[i];
+                medias[mediaCounter].polls.push(polls[i]);
             }
         }
+
         emit Created(msg.sender, mediaCounter);
     }
 
