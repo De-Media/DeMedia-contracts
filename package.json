@@ -1,5 +1,5 @@
 {
-  "name": "DeMedia-contracts",
+  "name": "demedia",
   "version": "0.2.0",
   "scripts": {
     "dev": "next dev",
