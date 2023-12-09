@@ -10,7 +10,6 @@ contract DeMedia {
         uint256 no;
         uint256 abstain;
         uint256 voteCount;
-        // This can be replaced by the nullifier
         // Nullifier can be accessed by calling _pubSignals[0]
         mapping(uint256 => bool) hasVoted;
     }
