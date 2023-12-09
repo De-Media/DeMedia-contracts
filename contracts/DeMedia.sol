@@ -5,6 +5,7 @@ import "./IAnonAadhaarVerifier.sol";
 
 contract DeMedia {
     struct Media {
+        string title;
         string description;
         // type of news tag: social, feedback, critique, tech
         string[] tags;
@@ -32,7 +33,10 @@ contract DeMedia {
     mapping(uint256 => Score) scoreTrack;
 
     event Answered(address indexed _from, uint256 indexed _mediaIndex);
-    event Created(address indexed _from, uint256 indexed _mediaIndex);
+    event Created(
+        address indexed _from,
+        uint256 indexed _mediaIndex
+    );
 
     // List of media
     mapping(uint256 => Media) medias;
@@ -50,7 +54,7 @@ contract DeMedia {
         return IAnonAadhaarVerifier(anonAadhaarVerifierAddr).verifyProof(_pA, _pB, _pC, _pubSignals);
     }
 
-    // Add media
+    // Function to add media
     function addMedia(
         string[] calldata media,
         string[] calldata polls,
@@ -108,6 +112,26 @@ contract DeMedia {
         scoreTrack[_pubSignals[0]].responseTotal++;
 
         emit Answered(msg.sender, mediaIndex);
+    }
+
+    // Note: Only used for testing purpose
+    function addData(string calldata description,
+        bool isPoll,
+        string[] calldata polls
+    ) public {
+        mediaCounter++;
+        medias[mediaCounter].description = description;
+
+        medias[mediaCounter].yes = 3;
+        medias[mediaCounter].no = 1;
+        medias[mediaCounter].abstain = 1;
+
+        if (isPoll) {
+            for(uint256 i = 0; i < polls.length; i++) {
+                medias[mediaCounter].polls.push(polls[i]);
+                medias[mediaCounter].pollsCount.push(i);
+            }
+        }
     }
 
     // TODO: Add more features
