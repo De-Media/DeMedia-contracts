@@ -5,16 +5,22 @@ import "./IAnonAadhaarVerifier.sol";
 
 contract DeMedia {
     struct Media {
-        // TODO: add pool type
         string description;
-        // type of news tag: social, feedback, critique
-        string tag;
+        // type of news tag: social, feedback, critique, tech
+        string[] tags;
+        // Nullifier can be accessed by calling _pubSignals[0]
+        mapping(uint256 => bool) hasAnswered;
+
+        string responseType; // Default: yes or no, could be agree or disagree, etc
         uint256 yes;
         uint256 no;
         uint256 abstain;
-        uint256 voteCount;
-        // Nullifier can be accessed by calling _pubSignals[0]
-        mapping(uint256 => bool) hasAnswered;
+        uint256 reponseCount;
+
+        // isPoll, use poll if true
+        bool isPoll;
+        string[] polls;
+        uint256[] pollsCount;
     }
     address public anonAadhaarVerifierAddr;
     uint256 public mediaCounter;
@@ -44,23 +50,49 @@ contract DeMedia {
     }
 
     // Function to add media
-    function addMedia(string calldata description, uint256[2] calldata _pA, uint[2][2] calldata _pB, uint[2] calldata _pC, uint[34] calldata _pubSignals) public {
+    function addMedia(string calldata description,
+        bool isPoll,
+        string[] calldata polls,
+        uint256[2] calldata _pA, uint[2][2] calldata _pB,
+        uint[2] calldata _pC, uint[34] calldata _pubSignals
+    ) public {
         // Needs to be an anon-verified user
         require(verify(_pA, _pB, _pC, _pubSignals), "Your idendity proof is not valid");
 
         mediaCounter++;
         medias[mediaCounter].description = description;
 
+        if (isPoll) {
+            medias[mediaCounter].polls = polls;
+        }
         emit Created(msg.sender, mediaCounter);
     }
 
     // Function to vote on media
-    function responseOnMedia(uint256 mediaIndex, uint256[2] calldata _pA, uint[2][2] calldata _pB, uint[2] calldata _pC, uint[34] calldata _pubSignals) public {
+    function responseOnMedia(uint256 mediaIndex, string calldata response, string calldata poll, uint256[2] calldata _pA, uint[2][2] calldata _pB, uint[2] calldata _pC, uint[34] calldata _pubSignals) public {
         require(mediaIndex > mediaCounter, "Invalid media index");
         require(!medias[mediaIndex].hasAnswered[_pubSignals[0]], "You have already voted");
         require(verify(_pA, _pB, _pC, _pubSignals), "Your idendity proof is not valid");
 
-        medias[mediaIndex].voteCount++;
+        medias[mediaIndex].reponseCount++;
+        if (medias[mediaIndex].isPoll) {
+            for (uint256 i = 0; i < medias[mediaIndex].polls.length; i++) {
+                if (keccak256(bytes(medias[mediaIndex].polls[i])) == keccak256(bytes(poll))) {
+                    medias[mediaIndex].pollsCount[i]++;
+                }
+            }
+        } else {
+            if (keccak256(bytes(response)) == keccak256(bytes("yes"))) {
+                medias[mediaIndex].yes++;
+            }
+            else if (keccak256(bytes(response)) == keccak256(bytes("no"))) {
+                medias[mediaIndex].no++;
+            }
+            else if (keccak256(bytes(response)) == keccak256(bytes("abstain"))) {
+                medias[mediaIndex].abstain++;
+            }
+        }
+
         medias[mediaIndex].hasAnswered[_pubSignals[0]] = true;
         scoreTrack[_pubSignals[0]].responseTotal++;
 
@@ -80,7 +112,7 @@ contract DeMedia {
         require(mediaIndex > mediaCounter, "Invalid media index");
 
         Media storage media = medias[mediaIndex];
-        return (media.description, media.yes, media.no, media.abstain, media.voteCount);
+        return (media.description, media.yes, media.no, media.abstain, media.reponseCount);
     }
 
     // Function to check if a user has already voted on a specific media
