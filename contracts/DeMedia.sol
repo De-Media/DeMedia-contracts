@@ -115,24 +115,24 @@ contract DeMedia {
     }
 
     // Note: Only used for testing purpose
-    function addData(string calldata description,
-        bool isPoll,
-        string[] calldata polls
-    ) public {
-        mediaCounter++;
-        medias[mediaCounter].description = description;
+    // function addData(string calldata description,
+    //     bool isPoll,
+    //     string[] calldata polls
+    // ) public {
+    //     mediaCounter++;
+    //     medias[mediaCounter].description = description;
 
-        medias[mediaCounter].yes = 3;
-        medias[mediaCounter].no = 1;
-        medias[mediaCounter].abstain = 1;
+    //     medias[mediaCounter].yes = 3;
+    //     medias[mediaCounter].no = 1;
+    //     medias[mediaCounter].abstain = 1;
 
-        if (isPoll) {
-            for(uint256 i = 0; i < polls.length; i++) {
-                medias[mediaCounter].polls.push(polls[i]);
-                medias[mediaCounter].pollsCount.push(i);
-            }
-        }
-    }
+    //     if (isPoll) {
+    //         for(uint256 i = 0; i < polls.length; i++) {
+    //             medias[mediaCounter].polls.push(polls[i]);
+    //             medias[mediaCounter].pollsCount.push(i);
+    //         }
+    //     }
+    // }
 
     // TODO: Add more features
 
