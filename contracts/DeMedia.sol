@@ -21,7 +21,7 @@ contract DeMedia {
     event Created(address indexed _from, uint256 indexed _mediaIndex);
 
     // List of media
-    Media[] public medias;
+    mapping(uint256 => Media) medias;
 
     // Constructor to initialize proposals
     constructor(address _verifierAddr) {
@@ -34,25 +34,29 @@ contract DeMedia {
     }
 
     // Function to add media
-    function addMedia(string description, uint256[2] calldata _pA, uint[2][2] calldata _pB, uint[2] calldata _pC, uint[34] calldata _pubSignals) public {
+    function addMedia(string calldata description, uint256[2] calldata _pA, uint[2][2] calldata _pB, uint[2] calldata _pC, uint[34] calldata _pubSignals) public {
         // Needs to be an anon-verified user
         require(verify(_pA, _pB, _pC, _pubSignals), "Your idendity proof is not valid");
 
         mediaCounter++;
-        medias.push(Media(description, 0, 0, 0, 0));
+        medias[mediaCounter].description = description;
+        // medias[mediaCounter].yes = 0;
+        // medias[mediaCounter].no = 0;
+        // medias[mediaCounter].abstain = 0;
+        // medias[mediaCounter].voteCount = 0;
 
         emit Created(msg.sender, mediaCounter);
     }
 
     // Function to vote on media
-    function voteForProposal(uint256 proposalIndex, uint256[2] calldata _pA, uint[2][2] calldata _pB, uint[2] calldata _pC, uint[34] calldata _pubSignals) public {
-        require(proposalIndex < proposals.length, "Invalid proposal index");
-        require(!hasVoted[msg.sender], "You have already voted");
+    function voteForMedia(uint256 mediaIndex, uint256[2] calldata _pA, uint[2][2] calldata _pB, uint[2] calldata _pC, uint[34] calldata _pubSignals) public {
+        require(mediaIndex > mediaCounter, "Invalid media index");
+        require(!medias[mediaIndex].hasVoted[_pubSignals[0]], "You have already voted");
         require(verify(_pA, _pB, _pC, _pubSignals), "Your idendity proof is not valid");
 
-        proposals[proposalIndex].voteCount++;
-        hasVoted[msg.sender] = true;
+        medias[mediaIndex].voteCount++;
+        medias[mediaIndex].hasVoted[_pubSignals[0]] = true;
 
-        emit Voted(msg.sender, proposalIndex);
+        emit Voted(msg.sender, mediaIndex);
     }
 }
