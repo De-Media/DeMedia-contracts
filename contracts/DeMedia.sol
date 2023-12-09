@@ -64,7 +64,9 @@ contract DeMedia {
         medias[mediaCounter].description = description;
 
         if (isPoll) {
-            medias[mediaCounter].polls = polls;
+            for(uint256 i = 0; i < polls.length; i++) {
+                medias[mediaCounter].polls[i] = polls[i];
+            }
         }
         emit Created(msg.sender, mediaCounter);
     }

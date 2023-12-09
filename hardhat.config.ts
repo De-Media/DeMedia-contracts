@@ -10,15 +10,17 @@ const config: HardhatUserConfig = {
   },
   networks: {
     polygonMumbai: {
-      url: "https://mumbai.polygonscan.com/",
+      url: "https://polygon-mumbai-bor.publicnode.com",
+     //  url: "https://rpc-mumbai.matic.today",
+     // url: "https://rpc-mumbai.maticvigil.com",
       accounts: [process.env.PRIVATE_KEY || ""],
     },
-    scroll: {
+    // scroll: {
 
-    },
-    okx: {
+    // },
+    // okx: {
 
-    },
+    // },
     goerli: {
       url: "https://ethereum-goerli.publicnode.com",
       accounts: [process.env.PRIVATE_KEY || ""],
