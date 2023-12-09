@@ -8,10 +8,8 @@ contract DeMedia {
         string description;
         // type of news tag: social, feedback, critique, tech
         string[] tags;
-        // Nullifier can be accessed by calling _pubSignals[0]
-        mapping(uint256 => bool) hasAnswered;
+        uint256 flag; // uint256 Default: yes or no, could be agree or disagree, etc
 
-        string responseType; // Default: yes or no, could be agree or disagree, etc
         uint256 yes;
         uint256 no;
         uint256 abstain;
@@ -38,6 +36,9 @@ contract DeMedia {
 
     // List of media
     mapping(uint256 => Media) medias;
+    // Voted data
+    // Nullifier can be accessed by calling _pubSignals[0]
+    mapping (uint256 => mapping (uint256 => bool)) hasVoted;
 
     // Constructor to initialize proposals
     constructor(address _verifierAddr) {
@@ -70,13 +71,13 @@ contract DeMedia {
 
     // Function to vote on media
     function responseOnMedia(uint256 mediaIndex, string calldata response, string calldata poll, uint256[2] calldata _pA, uint[2][2] calldata _pB, uint[2] calldata _pC, uint[34] calldata _pubSignals) public {
-        require(mediaIndex > mediaCounter, "Invalid media index");
-        require(!medias[mediaIndex].hasAnswered[_pubSignals[0]], "You have already voted");
+        require(mediaIndex <= mediaCounter, "Invalid media index");
+        require(!hasVoted[mediaIndex][_pubSignals[0]], "You have already voted");
         require(verify(_pA, _pB, _pC, _pubSignals), "Your idendity proof is not valid");
 
         medias[mediaIndex].reponseCount++;
         if (medias[mediaIndex].isPoll) {
-            for (uint256 i = 0; i < medias[mediaIndex].polls.length; i++) {
+            for (uint256 i = 1; i <= medias[mediaIndex].polls.length; i++) {
                 if (keccak256(bytes(medias[mediaIndex].polls[i])) == keccak256(bytes(poll))) {
                     medias[mediaIndex].pollsCount[i]++;
                 }
@@ -93,13 +94,12 @@ contract DeMedia {
             }
         }
 
-        medias[mediaIndex].hasAnswered[_pubSignals[0]] = true;
+        hasVoted[mediaIndex][_pubSignals[0]] = true;
         scoreTrack[_pubSignals[0]].responseTotal++;
 
         emit Answered(msg.sender, mediaIndex);
     }
 
-    // TODO: Generate random numbers ?
     // TODO: Add more features
 
     // Function to get the total number of media
@@ -108,17 +108,25 @@ contract DeMedia {
     }
 
     // Function to get media information by index
-    function getMedia(uint256 mediaIndex) public view returns (string memory, uint256, uint256, uint256, uint256) {
-        require(mediaIndex > mediaCounter, "Invalid media index");
-
-        Media storage media = medias[mediaIndex];
-        return (media.description, media.yes, media.no, media.abstain, media.reponseCount);
+    // returns description, tags, flag, isPoll, polls data,
+    // yes, no, abstain, responseCount
+    function getMedia(uint256 mediaIndex)
+        public view returns (string memory, string[] memory,
+        uint256, bool, string[] memory, uint256[] memory,
+        uint256, uint256, uint256, uint256) {
+        require(mediaIndex <= mediaCounter, "Invalid media index");
+        Media memory media = medias[mediaIndex];
+        return (
+            media.description,
+            media.tags,
+            media.flag,
+            media.isPoll,
+            media.polls,
+            media.pollsCount,
+            media.yes,
+            media.no,
+            media.abstain,
+            media.reponseCount
+        );
     }
-
-    // Function to check if a user has already voted on a specific media
-    // User here is ID
-    // TODO: how unique id is generated ?
-    // function checkVoted(uint256 id, uint256 mediaIndex) public view returns (bool) {
-    //     return hasVoted[_addr];
-    // }
 }
