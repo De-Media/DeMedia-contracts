@@ -35,13 +35,7 @@ contract DeMedia {
     event Answered(address indexed _from, uint256 indexed _mediaIndex);
     event Created(
         address indexed _from,
-        uint256 indexed _mediaIndex,
-        string title,
-        string description,
-        bool isPoll,
-        uint256 flag,
-        string[] tags,
-        string[] options
+        uint256 indexed _mediaIndex
     );
 
     // List of media
@@ -62,9 +56,7 @@ contract DeMedia {
 
     // Function to add media
     function addMedia(
-        string calldata title,
-        string calldata description,
-        bool isPoll,
+        string[] calldata media,
         string[] calldata polls,
         uint256 flag,
         string[] calldata tags,
@@ -72,18 +64,22 @@ contract DeMedia {
         uint[2] calldata _pC, uint[34] calldata _pubSignals
     ) public {
         // Needs to be an anon-verified user
-        //require(verify(_pA, _pB, _pC, _pubSignals), "Your idendity proof is not valid");
+        // require(verify(_pA, _pB, _pC, _pubSignals), "Your idendity proof is not valid");
 
         mediaCounter++;
-        medias[mediaCounter].description = description;
+        medias[mediaCounter].description = media[0];
         medias[mediaCounter].flag = flag;
+        for(uint256 i = 0; i < tags.length; i++) {
+            medias[mediaCounter].tags.push(tags[i]);
+        }
 
-        if (isPoll) {
+        if (polls.length > 0) {
+            medias[mediaCounter].isPoll = true;
             for(uint256 i = 0; i < polls.length; i++) {
                 medias[mediaCounter].polls.push(polls[i]);
             }
         }
-        emit Created(msg.sender, mediaCounter, title, description, isPoll, flag, tags, polls);
+        emit Created(msg.sender, mediaCounter);
     }
 
     // Function to vote on media
