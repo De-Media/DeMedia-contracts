@@ -15,7 +15,7 @@ npx hardhat run scripts/deploy.ts
 # Deployments
 
 ## Polygon Mumbai
-    - 0x87631258fc3C643289F6f11CD48ABa6CFa535A63
+    - 0x1ba38efb49e49c4646328916fb53cec7cb9dd43c
 
 ## Scroll
-    - 0x1ba38efb49e49c4646328916fb53cec7cb9dd43c
+    - 0x87631258fc3C643289F6f11CD48ABa6CFa535A63
