@@ -16,9 +16,13 @@ const config: HardhatUserConfig = {
       accounts: [process.env.PRIVATE_KEY || ""],
       gasPrice: 35000000000,
     },
-    // scroll: {
-
-    // },
+    scroll: {
+      url: "https://sepolia-rpc.scroll.io",
+      //  url: "https://rpc-mumbai.matic.today",
+      // url: "https://rpc-mumbai.maticvigil.com",
+       accounts: [process.env.PRIVATE_KEY || ""],
+       //gasPrice: 35000000000,
+    },
     // okx: {
 
     // },
@@ -26,6 +30,21 @@ const config: HardhatUserConfig = {
       url: "https://ethereum-goerli.publicnode.com",
       accounts: [process.env.PRIVATE_KEY || ""],
     },
+  },
+  etherscan: {
+    apiKey: {
+      scroll: 'U68J8UHTQBQ2Q642F1MAR1G7DNI8MS9V96',
+    },
+    customChains: [
+      {
+        network: 'scroll',
+        chainId: 534351,
+        urls: {
+          apiURL: 'https://sepolia-blockscout.scroll.io/api',
+          browserURL: 'https://sepolia-blockscout.scroll.io/',
+        },
+      },
+    ],
   },
 };
 
