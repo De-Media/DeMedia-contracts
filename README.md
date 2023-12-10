@@ -1,6 +1,6 @@
-# Sample Hardhat Project
+# DeMedia
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a script that deploys that contract.
+# Run Scripts and test contracts
 
 Try running some of the following tasks:
 
@@ -11,3 +11,11 @@ REPORT_GAS=true npx hardhat test
 npx hardhat node
 npx hardhat run scripts/deploy.ts
 ```
+
+# Deployments
+
+## Polygon Mumbai
+    - 0x87631258fc3C643289F6f11CD48ABa6CFa535A63
+
+## Scroll
+    - 0x1ba38efb49e49c4646328916fb53cec7cb9dd43c
